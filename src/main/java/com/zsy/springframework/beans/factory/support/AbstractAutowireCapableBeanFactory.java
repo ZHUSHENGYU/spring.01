@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.zsy.springframework.beans.BeansException;
 import com.zsy.springframework.beans.PropertyValue;
 import com.zsy.springframework.beans.PropertyValues;
+import com.zsy.springframework.beans.factory.AutowiredCapableBeanFactory;
 import com.zsy.springframework.beans.factory.config.BeanDefinition;
 import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
 import com.zsy.springframework.beans.factory.config.BeanReference;
@@ -12,7 +13,7 @@ import com.zsy.springframework.beans.factory.support.strategy.InstantiationStrat
 
 import java.lang.reflect.Constructor;
 
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
+public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowiredCapableBeanFactory {
 
     private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
@@ -51,7 +52,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return wrappedBean;
     }
 
-    protected Object applyBeanPostProcessorBeforeInitialization(Object existingBean, String beanName) {
+
+    protected void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) {
+
+    }
+
+
+    @Override
+    public Object applyBeanPostProcessorBeforeInitialization(Object existingBean, String beanName) {
 
         Object result = existingBean;
         for (BeanPostProcessor processor: getBeanPostProcessors()) {
@@ -62,12 +70,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return result;
     }
 
-    protected void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) {
-
-    }
-
-
-    protected Object applyBeanPostProcessorAfterInitialization(Object existingBean, String beanName) {
+    @Override
+    public Object applyBeanPostProcessorAfterInitialization(Object existingBean, String beanName) {
 
         Object result = existingBean;
         for (BeanPostProcessor processor: getBeanPostProcessors()) {
