@@ -8,6 +8,7 @@ import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
 import com.zsy.springframework.beans.factory.config.BeanReference;
 import com.zsy.springframework.beans.factory.support.DefaultListableBeanFactory;
 import com.zsy.springframework.beans.factory.support.reader.XmlBeanDefinitionReader;
+import com.zsy.springframework.context.support.ClassPathXmlApplicationContext;
 import com.zsy.springframework.test.bean.UserDao;
 import com.zsy.springframework.test.bean.UserService;
 import com.zsy.springframework.test.common.MyBeanFactoryPostProcessor;
@@ -46,6 +47,16 @@ public class ApiTest {
 
 
         UserService userService = beanFactory.getBean("userService", UserService.class);
+        userService.queryUserInfo();
+    }
+
+    @Test
+    public void testApplicationContext() {
+
+        ClassPathXmlApplicationContext applicationContext =
+                new ClassPathXmlApplicationContext("classpath:spring-02.xml");
+
+        UserService userService = applicationContext.getBean("userService", UserService.class);
         userService.queryUserInfo();
     }
 }

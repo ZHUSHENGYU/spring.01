@@ -1,17 +1,17 @@
 package com.zsy.springframework.context.support;
 
-public class ClappPathXmlApplicationContext extends AbstractXmlApplicationContext {
+public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContext {
 
     private String[] configLocations;
 
-    public ClappPathXmlApplicationContext() {
+    public ClassPathXmlApplicationContext() {
     }
 
-    public ClappPathXmlApplicationContext(String configLocation) {
+    public ClassPathXmlApplicationContext(String configLocation) {
         this(new String[]{configLocation});
     }
 
-    public ClappPathXmlApplicationContext(String[] configLocations) {
+    public ClassPathXmlApplicationContext(String[] configLocations) {
         this.configLocations = configLocations;
         refresh();
     }
