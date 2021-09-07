@@ -5,13 +5,14 @@ import com.zsy.springframework.beans.BeansException;
 import com.zsy.springframework.beans.PropertyValue;
 import com.zsy.springframework.beans.PropertyValues;
 import com.zsy.springframework.beans.factory.config.BeanDefinition;
+import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
 import com.zsy.springframework.beans.factory.config.BeanReference;
 import com.zsy.springframework.beans.factory.support.strategy.CglibSubclassingInstantiationStrategy;
 import com.zsy.springframework.beans.factory.support.strategy.InstantiationStrategy;
 
 import java.lang.reflect.Constructor;
 
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
+public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
     private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
@@ -30,6 +31,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         try {
             bean = createBeanInstance(beanDefinition, beanName, args);
             applyBeanPropertyValues(beanName, bean, beanDefinition);
+
+            bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
@@ -38,8 +41,44 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return bean;
     }
 
-    protected void applyBeanPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+    protected Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
 
+        Object wrappedBean = applyBeanPostProcessorBeforeInitialization(bean, beanName);
+
+        invokeInitMethods(beanName, wrappedBean, beanDefinition);
+
+        wrappedBean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+        return wrappedBean;
+    }
+
+    protected Object applyBeanPostProcessorBeforeInitialization(Object existingBean, String beanName) {
+
+        Object result = existingBean;
+        for (BeanPostProcessor processor: getBeanPostProcessors()) {
+            Object current = processor.postProcessBeforeInitialization(result, beanName);
+            if (null == current) return current;
+            result = current;
+        }
+        return result;
+    }
+
+    protected void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) {
+
+    }
+
+
+    protected Object applyBeanPostProcessorAfterInitialization(Object existingBean, String beanName) {
+
+        Object result = existingBean;
+        for (BeanPostProcessor processor: getBeanPostProcessors()) {
+            Object current = processor.postProcessAfterInitialization(result, beanName);
+            if (null == current) return current;
+            result = current;
+        }
+        return result;
+    }
+
+    protected void applyBeanPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
 
         try {
             PropertyValues propertyValues = beanDefinition.getPropertyValues();
