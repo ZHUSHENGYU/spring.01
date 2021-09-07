@@ -20,4 +20,7 @@ public class ClappPathXmlApplicationContext extends AbstractXmlApplicationContex
     public String[] getConfigLocations() {
         return configLocations;
     }
+
+
+
 }

@@ -1,6 +1,7 @@
 package com.zsy.springframework.context.support;
 
 import com.zsy.springframework.beans.BeansException;
+import com.zsy.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.zsy.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
 import com.zsy.springframework.context.ConfigurableApplicationContext;
@@ -43,5 +44,42 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         for (BeanPostProcessor beanPostProcessor: beanPostProcessorMap.values()) {
             beanFactory.addBeanPostProcessor(beanPostProcessor);
         }
+    }
+
+    @Override
+    public Object getBean(String beanName) throws BeansException {
+        return getBeanFactory().getBean(beanName);
+    }
+
+    @Override
+    public Object getBean(String beanName, Object[] args) throws BeansException {
+        return getBeanFactory().getBean(beanName, args);
+    }
+
+    @Override
+    public <T> T getBean(String beanName, Class<T> requiredType) throws BeansException {
+        return getBeanFactory().getBean(beanName, requiredType);
+    }
+
+    @Override
+    public <T> Map<String, T> getBeansOfType(Class<T> requiredType) throws BeansException {
+        return getBeanFactory().getBeansOfType(requiredType);
+    }
+
+    @Override
+    public String[] getBeanDefinitionNames() {
+        return getBeanFactory().getBeanDefinitionNames();
+    }
+
+    @Override
+    public void registerShutdownHook() {
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
+
+    @Override
+    public void close() {
+
+        getBeanFactory().destroySingletons();
     }
 }
