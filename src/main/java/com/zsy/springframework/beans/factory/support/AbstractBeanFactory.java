@@ -5,11 +5,14 @@ import com.zsy.springframework.beans.factory.BeanFactory;
 import com.zsy.springframework.beans.factory.ConfigurableBeanFactory;
 import com.zsy.springframework.beans.factory.config.BeanDefinition;
 import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
+import com.zsy.springframework.utils.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+
+    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
     private final List<BeanPostProcessor> beanPostProcessors =new ArrayList<>();
 
@@ -53,4 +56,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return beanPostProcessors;
     }
 
+    public ClassLoader getBeanClassLoader() {
+        return beanClassLoader;
+    }
 }

@@ -1,9 +1,17 @@
 package com.zsy.springframework.test.bean;
 
+import com.zsy.springframework.beans.BeansException;
 import com.zsy.springframework.beans.factory.config.DisposableBean;
 import com.zsy.springframework.beans.factory.config.InitializingBean;
+import com.zsy.springframework.beans.factory.support.aware.BeanNameAware;
+import com.zsy.springframework.context.ApplicationContext;
+import com.zsy.springframework.context.support.aware.ApplicationContextAware;
 
-public class UserService implements InitializingBean, DisposableBean {
+public class UserService implements
+        InitializingBean, DisposableBean, BeanNameAware, ApplicationContextAware {
+
+    private String beanName;
+    private ApplicationContext applicationContext;
 
     private String uId;
     private String company;
@@ -56,5 +64,18 @@ public class UserService implements InitializingBean, DisposableBean {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Override
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+        System.out.println(beanName);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+
+        this.applicationContext = applicationContext;
+        System.out.println(applicationContext);
     }
 }

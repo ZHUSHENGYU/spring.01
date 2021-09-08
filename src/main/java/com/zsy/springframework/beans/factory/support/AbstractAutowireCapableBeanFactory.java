@@ -8,6 +8,10 @@ import com.zsy.springframework.beans.PropertyValues;
 import com.zsy.springframework.beans.factory.AutowiredCapableBeanFactory;
 import com.zsy.springframework.beans.factory.config.*;
 import com.zsy.springframework.beans.factory.support.adapter.DisposableBeanAdapter;
+import com.zsy.springframework.beans.factory.support.aware.Aware;
+import com.zsy.springframework.beans.factory.support.aware.BeanClassLoaderAware;
+import com.zsy.springframework.beans.factory.support.aware.BeanFactoryAware;
+import com.zsy.springframework.beans.factory.support.aware.BeanNameAware;
 import com.zsy.springframework.beans.factory.support.strategy.CglibSubclassingInstantiationStrategy;
 import com.zsy.springframework.beans.factory.support.strategy.InstantiationStrategy;
 
@@ -52,6 +56,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+
+        // invoke aware methods
+        if (bean instanceof Aware) {
+            if (bean instanceof BeanNameAware) ((BeanNameAware) bean).setBeanName(beanName);
+            if (bean instanceof BeanFactoryAware) ((BeanFactoryAware) bean).setBeanFactory(this);
+            if (bean instanceof BeanClassLoaderAware) ((BeanClassLoaderAware) bean).setBeanClassLoader(getBeanClassLoader());
+        }
 
         Object wrappedBean = applyBeanPostProcessorBeforeInitialization(bean, beanName);
 

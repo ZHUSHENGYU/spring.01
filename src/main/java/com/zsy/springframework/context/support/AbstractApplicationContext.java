@@ -5,6 +5,7 @@ import com.zsy.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.zsy.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
 import com.zsy.springframework.context.ConfigurableApplicationContext;
+import com.zsy.springframework.context.support.aware.processor.ApplicationContextAwareProcessor;
 import com.zsy.springframework.core.io.support.DefaultResourceLoader;
 
 import java.util.Map;
@@ -17,6 +18,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         refreshBeanFactory();
 
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+
+        beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 
         invokeBeanFactoryPostProcessors(beanFactory);
 
