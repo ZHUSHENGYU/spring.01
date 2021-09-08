@@ -60,4 +60,28 @@ public class ApiTest {
         UserService userService = applicationContext.getBean("userService", UserService.class);
         userService.queryUserInfo();
     }
+
+    @Test
+    public void testApplicationContext2() {
+
+        ClassPathXmlApplicationContext applicationContext =
+                new ClassPathXmlApplicationContext("classpath:spring-03.xml");
+        applicationContext.registerShutdownHook();
+
+        // 2. 获取 Bean 对象调用方法
+        UserService userService01 = applicationContext.getBean("userService", UserService.class);
+        userService01.queryUserInfo();
+
+        UserService userService02 = applicationContext.getBean("userService", UserService.class);
+        userService02.queryUserInfo();
+
+
+// 3. 配置 scope="prototype/singleton"
+        System.out.println(userService01);
+        System.out.println(userService02);
+// 4. 打印十六进制哈希
+        System.out.println(userService01 + " 十六进制哈希：" + Integer.toHexString(userService01.hashCode()));
+        System.out.println(userService02 + " 十六进制哈希：" + Integer.toHexString(userService02.hashCode()));
+        //System.out.println(ClassLayout.parseInstance(userService01).toPrintable());
+    }
 }

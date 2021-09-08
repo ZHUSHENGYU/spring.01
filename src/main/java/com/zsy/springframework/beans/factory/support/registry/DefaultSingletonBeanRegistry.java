@@ -1,4 +1,4 @@
-package com.zsy.springframework.beans.factory.support;
+package com.zsy.springframework.beans.factory.support.registry;
 
 import com.zsy.springframework.beans.BeansException;
 import com.zsy.springframework.beans.factory.config.DisposableBean;
@@ -12,6 +12,9 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
     private Map<String, Object> singletonObjects = new HashMap<>();
     private final Map<String, DisposableBean> disposableBeans = new HashMap<>();
+
+    protected static final Object NULL_OBJECT = new Object();
+
     @Override
     public Object getSingleton(String beanName) {
 
