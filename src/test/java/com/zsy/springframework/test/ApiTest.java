@@ -13,6 +13,7 @@ import com.zsy.springframework.test.bean.UserDao;
 import com.zsy.springframework.test.bean.UserService;
 import com.zsy.springframework.test.common.MyBeanFactoryPostProcessor;
 import com.zsy.springframework.test.common.MyBeanPostProcessor;
+import com.zsy.springframework.test.event.CustomEvent;
 import org.junit.Test;
 
 public class ApiTest {
@@ -83,5 +84,14 @@ public class ApiTest {
         System.out.println(userService01 + " 十六进制哈希：" + Integer.toHexString(userService01.hashCode()));
         System.out.println(userService02 + " 十六进制哈希：" + Integer.toHexString(userService02.hashCode()));
         //System.out.println(ClassLayout.parseInstance(userService01).toPrintable());
+    }
+
+    @Test
+    public void testApplcationEvent() {
+
+        ClassPathXmlApplicationContext applicationContext =
+                new ClassPathXmlApplicationContext("classpath:spring-03.xml");
+        applicationContext.publishEvent(new CustomEvent(applicationContext, 5L, "aaa"));
+        applicationContext.registerShutdownHook();
     }
 }
