@@ -1,5 +1,7 @@
 package com.zsy.springframework.utils;
 
+import com.zsy.springframework.context.support.event.ApplicationListener;
+
 public class ClassUtils {
 
     public static ClassLoader getDefaultClassLoader() {
@@ -16,5 +18,15 @@ public class ClassUtils {
             cl = ClassUtils.class.getClassLoader();
         }
         return cl;
+    }
+
+    public static boolean isCglibProxyClass(Class<?> clazz) {
+
+        return (clazz != null && isCglibProxyClassName(clazz.getName()));
+    }
+
+    private static boolean isCglibProxyClassName(String clazzName) {
+
+        return (clazzName != null && clazzName.contains("$$"));
     }
 }
