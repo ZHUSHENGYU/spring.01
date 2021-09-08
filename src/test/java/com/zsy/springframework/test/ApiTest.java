@@ -55,6 +55,7 @@ public class ApiTest {
 
         ClassPathXmlApplicationContext applicationContext =
                 new ClassPathXmlApplicationContext("classpath:spring-02.xml");
+        applicationContext.registerShutdownHook();
 
         UserService userService = applicationContext.getBean("userService", UserService.class);
         userService.queryUserInfo();

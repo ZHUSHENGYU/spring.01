@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <beans>
-    <bean id="userDao" class="com.zsy.springframework.test.bean.UserDao"/>
+    <bean id="userDao" class="com.zsy.springframework.test.bean.UserDao"
+          init-method="initDataMethod"
+          destroy-method="destroyDataMethod"></bean>
     <bean id="userService" class="com.zsy.springframework.test.bean.UserService">
         <property name="uId" value="10003"/>
         <property name="company" value="腾讯"/>

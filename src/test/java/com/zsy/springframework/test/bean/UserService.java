@@ -1,6 +1,9 @@
 package com.zsy.springframework.test.bean;
 
-public class UserService {
+import com.zsy.springframework.beans.factory.config.DisposableBean;
+import com.zsy.springframework.beans.factory.config.InitializingBean;
+
+public class UserService implements InitializingBean, DisposableBean {
 
     private String uId;
     private String company;
@@ -11,6 +14,16 @@ public class UserService {
 
         // System.out.println("查询用户信息：" + userDao.queryUserName(uId));
         System.out.println(userDao.queryUserName(uId) + "," + company + "," + location);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println("执行：UserService.destroy");
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println("执行：UserService.afterPropertiesSet");
     }
 
     public String getuId() {
