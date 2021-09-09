@@ -8,9 +8,6 @@
         <property name="userDao" ref="proxyUserDao"/>
     </bean>
 
-<!--    <bean class="com.zsy.springframework.test.common.MyBeanFactoryPostProcessor"/>-->
-<!--    <bean class="com.zsy.springframework.test.common.MyBeanPostProcessor"/>-->
-
     <bean id="customEventListener" class="com.zsy.springframework.test.event.CustomEventListener"></bean>
 
 </beans>

@@ -1,8 +1,9 @@
 package com.zsy.springframework.test;
 
-import com.zsy.springframework.aop.AspectJExpressionPointcut;
+import com.zsy.springframework.aop.*;
 import com.zsy.springframework.test.bean.IUserService;
 import com.zsy.springframework.test.bean.UserService;
+import com.zsy.springframework.test.interceptor.UserServiceInterceptor;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationHandler;
@@ -48,6 +49,24 @@ public class ApiTest {
 
         System.out.println(pointcut.matches(clazz));
         System.out.println(pointcut.matches(method, clazz));
+
+    }
+
+    @Test
+    public void testDynamic() {
+
+        IUserService userService = new UserService();
+
+        AdvicedSupport advicedSupport = new AdvicedSupport();
+        advicedSupport.setTargetSource(new TargetSource(userService));
+        advicedSupport.setMethodInterceptor(new UserServiceInterceptor());
+        advicedSupport.setMethodMatcher(new AspectJExpressionPointcut("execution(* com.zsy.springframework.test.bean.IUserService.*(..))"));
+
+        IUserService proxy_jdk = (IUserService) new JdkAopDynamicProxy(advicedSupport).getProxy();
+        System.out.println(proxy_jdk.queryUserInfo());
+
+        IUserService proxy_cglib = (IUserService) new Cglib2AopProxy(advicedSupport).getProxy();
+        System.out.println(proxy_cglib.register("aaa"));
 
     }
 }
