@@ -1,97 +1,53 @@
 package com.zsy.springframework.test;
 
-import com.zsy.springframework.beans.PropertyValue;
-import com.zsy.springframework.beans.PropertyValues;
-import com.zsy.springframework.beans.factory.config.BeanDefinition;
-import com.zsy.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
-import com.zsy.springframework.beans.factory.config.BeanReference;
-import com.zsy.springframework.beans.factory.support.DefaultListableBeanFactory;
-import com.zsy.springframework.beans.factory.support.reader.XmlBeanDefinitionReader;
-import com.zsy.springframework.context.support.ClassPathXmlApplicationContext;
-import com.zsy.springframework.test.bean.UserDao;
+import com.zsy.springframework.aop.AspectJExpressionPointcut;
+import com.zsy.springframework.test.bean.IUserService;
 import com.zsy.springframework.test.bean.UserService;
-import com.zsy.springframework.test.common.MyBeanFactoryPostProcessor;
-import com.zsy.springframework.test.common.MyBeanPostProcessor;
-import com.zsy.springframework.test.event.CustomEvent;
 import org.junit.Test;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 public class ApiTest {
 
     @Test
-    public void testBeanFactory() {
+    public void testProxyClass() {
 
-        // 1.初始化 BeanFactory
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        IUserService userService = (IUserService) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                new Class[]{IUserService.class}, ((proxy, method, args) -> {
 
-        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
-        reader.loadBeanDefinitions("classpath:spring-01.xml");
-
-        UserService userService = (UserService) beanFactory.getBean("userService");
-        userService.queryUserInfo();
+                    return "你被代理了";
+                }));
+        String rs = userService.queryUserInfo();
+        System.out.println(rs);
     }
 
     @Test
-    public void testBeanFactoryPostProcessorAndBeanPostProcessor() {
+    public void testProxyMethod() {
 
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-        XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
-        beanDefinitionReader.loadBeanDefinitions("classpath:spring-02.xml");
+        Object userService = new UserService();
 
-        BeanFactoryPostProcessor beanFactoryPostProcessor =
-                new MyBeanFactoryPostProcessor();
-        beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+        IUserService userServiceProxy = (IUserService) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader()
+                , new Class[]{IUserService.class}, new InvocationHandler() {
 
-        BeanPostProcessor beanPostProcessor =
-                new MyBeanPostProcessor();
-        beanFactory.addBeanPostProcessor(beanPostProcessor);
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return null;
+                    }
+                });
 
-
-        UserService userService = beanFactory.getBean("userService", UserService.class);
-        userService.queryUserInfo();
     }
 
     @Test
-    public void testApplicationContext() {
+    public void testAop() throws NoSuchMethodException {
 
-        ClassPathXmlApplicationContext applicationContext =
-                new ClassPathXmlApplicationContext("classpath:spring-02.xml");
-        applicationContext.registerShutdownHook();
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut("execution(* com.zsy.springframework.test.bean.UserService.*(..))");
+        Class<UserService> clazz = UserService.class;
+        Method method = clazz.getDeclaredMethod("queryUserInfo");
 
-        UserService userService = applicationContext.getBean("userService", UserService.class);
-        userService.queryUserInfo();
-    }
+        System.out.println(pointcut.matches(clazz));
+        System.out.println(pointcut.matches(method, clazz));
 
-    @Test
-    public void testApplicationContext2() {
-
-        ClassPathXmlApplicationContext applicationContext =
-                new ClassPathXmlApplicationContext("classpath:spring-03.xml");
-        applicationContext.registerShutdownHook();
-
-        // 2. 获取 Bean 对象调用方法
-        UserService userService01 = applicationContext.getBean("userService", UserService.class);
-        userService01.queryUserInfo();
-
-        UserService userService02 = applicationContext.getBean("userService", UserService.class);
-        userService02.queryUserInfo();
-
-
-// 3. 配置 scope="prototype/singleton"
-        System.out.println(userService01);
-        System.out.println(userService02);
-// 4. 打印十六进制哈希
-        System.out.println(userService01 + " 十六进制哈希：" + Integer.toHexString(userService01.hashCode()));
-        System.out.println(userService02 + " 十六进制哈希：" + Integer.toHexString(userService02.hashCode()));
-        //System.out.println(ClassLayout.parseInstance(userService01).toPrintable());
-    }
-
-    @Test
-    public void testApplcationEvent() {
-
-        ClassPathXmlApplicationContext applicationContext =
-                new ClassPathXmlApplicationContext("classpath:spring-03.xml");
-        applicationContext.publishEvent(new CustomEvent(applicationContext, 5L, "aaa"));
-        applicationContext.registerShutdownHook();
     }
 }
