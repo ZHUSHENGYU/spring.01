@@ -35,6 +35,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         Object bean = null;
         try {
+
+            bean = resolveBeforeInstantiation(beanName, beanDefinition);
+            if (null != bean){
+                return bean;
+            }
+
             bean = createBeanInstance(beanDefinition, beanName, args);
             applyBeanPropertyValues(beanName, bean, beanDefinition);
 
@@ -50,6 +56,26 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
 
         return bean;
+    }
+
+    protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
+
+        Object bean = applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
+        if (null != bean) {
+            bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+        }
+        return bean;
+    }
+
+    protected Object applyBeanPostProcessorsBeforeInstantiation(Class beanClass, String beanName) {
+
+        for (BeanPostProcessor beanPostProcessor: getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
+                if (null != result) return result;
+            }
+        }
+        return null;
     }
 
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition beanDefinition) {

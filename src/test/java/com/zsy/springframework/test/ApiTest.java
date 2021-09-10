@@ -1,6 +1,7 @@
 package com.zsy.springframework.test;
 
 import com.zsy.springframework.aop.*;
+import com.zsy.springframework.context.support.ClassPathXmlApplicationContext;
 import com.zsy.springframework.test.bean.IUserService;
 import com.zsy.springframework.test.bean.UserService;
 import com.zsy.springframework.test.interceptor.UserServiceInterceptor;
@@ -67,6 +68,17 @@ public class ApiTest {
 
         IUserService proxy_cglib = (IUserService) new Cglib2AopProxy(advicedSupport).getProxy();
         System.out.println(proxy_cglib.register("aaa"));
+
+    }
+
+    @Test
+    public void testAop2() {
+
+        ClassPathXmlApplicationContext applicationContext
+                = new ClassPathXmlApplicationContext("classpath:spring-04.xml");
+        IUserService userService = applicationContext.getBean("userService", IUserService.class);
+        System.out.println(userService.queryUserInfo());
+
 
     }
 }
