@@ -1,6 +1,11 @@
 package com.zsy.springframework.utils;
 
+import cn.hutool.core.lang.ClassScanner;
+import com.zsy.springframework.context.annotation.Component;
 import com.zsy.springframework.context.support.event.ApplicationListener;
+
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 public class ClassUtils {
 
@@ -28,5 +33,10 @@ public class ClassUtils {
     private static boolean isCglibProxyClassName(String clazzName) {
 
         return (clazzName != null && clazzName.contains("$$"));
+    }
+
+    public static Set<Class<?>> scanPackageByAnnotation(String basePackage, Class<? extends Annotation> annotationClass) {
+
+        return ClassScanner.scanPackageByAnnotation(basePackage, annotationClass);
     }
 }

@@ -76,8 +76,8 @@ public class ApiTest {
 
         ClassPathXmlApplicationContext applicationContext
                 = new ClassPathXmlApplicationContext("classpath:spring-04.xml");
-        IUserService userService = applicationContext.getBean("userService", IUserService.class);
-        System.out.println(userService.queryUserInfo());
+        IUserService userService = applicationContext.getBean("userService111", IUserService.class);
+        System.out.println(userService);
 
 
     }
