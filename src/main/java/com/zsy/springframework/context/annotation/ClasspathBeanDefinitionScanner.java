@@ -3,6 +3,7 @@ package com.zsy.springframework.context.annotation;
 import cn.hutool.core.util.StrUtil;
 import com.zsy.springframework.beans.factory.config.BeanDefinition;
 import com.zsy.springframework.beans.factory.config.BeanDefinitionRegistry;
+import com.zsy.springframework.stereotype.Component;
 
 import java.util.Set;
 

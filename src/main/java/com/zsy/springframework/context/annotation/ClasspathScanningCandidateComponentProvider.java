@@ -1,6 +1,7 @@
 package com.zsy.springframework.context.annotation;
 
 import com.zsy.springframework.beans.factory.config.BeanDefinition;
+import com.zsy.springframework.stereotype.Component;
 import com.zsy.springframework.utils.ClassUtils;
 
 import java.util.HashSet;

@@ -6,6 +6,7 @@ import com.zsy.springframework.beans.PropertyValues;
 import com.zsy.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.zsy.springframework.core.io.Resource;
 import com.zsy.springframework.core.io.support.DefaultResourceLoader;
+import com.zsy.springframework.utils.StringValueResolver;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -41,23 +42,46 @@ public class PropertyPlaceholderConfigure implements BeanFactoryPostProcessor {
 
                     Object value = propertyValue.getValue();
                     if (!(value instanceof String)) continue;
-
-                    String strVal = (String) value;
-                    StringBuilder buffer = new StringBuilder(strVal);
-                    int startIdx = buffer.indexOf(DEFAULT_PLACEHOLDER_PREFIX);
-                    int stopIdx = buffer.indexOf(DEFAULT_PLACEHOLDER_SUFFIX);
-                    if (startIdx != -1 && stopIdx != -1 && startIdx < stopIdx) {
-                        String propKey = strVal.substring(startIdx+2, stopIdx);
-                        String propValue = properties.getProperty(propKey);
-                        buffer.replace(startIdx, stopIdx+1,propValue);
-                        propertyValues.addPropertyValue(new PropertyValue(propertyValue.getName(), buffer.toString()));
-                    }
+                    value = resolvePlaceholder((String) value, properties);
+                    propertyValues.addPropertyValue(new PropertyValue(propertyValue.getName(), value));
                 }
             }
+
+            StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(properties);
+            beanFactory.addEmbeddedValueResolver(valueResolver);
+
         } catch (IOException e) {
 
             throw new BeansException("Could not load properties", e);
         }
 
+    }
+
+    private String resolvePlaceholder(String value, Properties properties) {
+        String strVal = value;
+        StringBuilder buffer = new StringBuilder(strVal);
+        int startIdx = strVal.indexOf(DEFAULT_PLACEHOLDER_PREFIX);
+        int stopIdx = strVal.indexOf(DEFAULT_PLACEHOLDER_SUFFIX);
+        if (startIdx != -1 && stopIdx != -1 && startIdx < stopIdx) {
+            String propKey = strVal.substring(startIdx + 2, stopIdx);
+            String propVal = properties.getProperty(propKey);
+            buffer.replace(startIdx, stopIdx + 1, propVal);
+        }
+        return buffer.toString();
+    }
+
+    private class PlaceholderResolvingStringValueResolver implements StringValueResolver {
+
+        private Properties properties;
+
+        public PlaceholderResolvingStringValueResolver(Properties properties) {
+            this.properties = properties;
+        }
+
+        @Override
+        public String resolveStringValue(String strVal) {
+
+            return PropertyPlaceholderConfigure.this.resolvePlaceholder(strVal, properties);
+        }
     }
 }

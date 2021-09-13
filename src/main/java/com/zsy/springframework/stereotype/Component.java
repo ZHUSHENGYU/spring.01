@@ -1,4 +1,4 @@
-package com.zsy.springframework.context.annotation;
+package com.zsy.springframework.stereotype;
 
 import java.lang.annotation.*;
 

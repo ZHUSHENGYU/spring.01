@@ -8,6 +8,7 @@ import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
 import com.zsy.springframework.beans.factory.support.registry.DefaultSingletonBeanRegistry;
 import com.zsy.springframework.beans.factory.support.registry.FactoryBeanRegistrySupport;
 import com.zsy.springframework.utils.ClassUtils;
+import com.zsy.springframework.utils.StringValueResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
     private final List<BeanPostProcessor> beanPostProcessors =new ArrayList<>();
+
+    private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
 
     @Override
     public Object getBean(String beanName) {
@@ -76,5 +79,20 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     public ClassLoader getBeanClassLoader() {
         return beanClassLoader;
+    }
+
+
+    @Override
+    public String resolveEmbeddedValue(String value) {
+        String result = value;
+        for (StringValueResolver resolver : this.embeddedValueResolvers) {
+            result = resolver.resolveStringValue(result);
+        }
+        return result;
+    }
+
+    @Override
+    public void addEmbeddedValueResolver(StringValueResolver valueResolver) {
+        this.embeddedValueResolvers.add(valueResolver);
     }
 }

@@ -4,6 +4,7 @@ import com.zsy.springframework.aop.*;
 import com.zsy.springframework.aop.advisor.Advisor;
 import com.zsy.springframework.aop.framework.ProxyFactory;
 import com.zsy.springframework.beans.BeansException;
+import com.zsy.springframework.beans.PropertyValues;
 import com.zsy.springframework.beans.factory.BeanFactory;
 import com.zsy.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import com.zsy.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -69,5 +70,11 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         return bean;
+    }
+
+    @Override
+    public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
+
+        return pvs;
     }
 }

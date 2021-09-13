@@ -7,8 +7,6 @@
         <property name="location" value="classpath:token.properties"/>
     </bean>
 
-    <bean id="userService" class="com.zsy.springframework.test.bean.UserService">
-        <property name="token" value="${token}"/>
-    </bean>
+    <bean class="com.zsy.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
 </beans>

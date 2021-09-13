@@ -1,19 +1,19 @@
 package com.zsy.springframework.test.bean;
 
-import com.zsy.springframework.beans.BeansException;
-import com.zsy.springframework.beans.factory.config.DisposableBean;
-import com.zsy.springframework.beans.factory.config.InitializingBean;
-import com.zsy.springframework.beans.factory.support.aware.BeanNameAware;
-import com.zsy.springframework.context.ApplicationContext;
-import com.zsy.springframework.context.annotation.Component;
-import com.zsy.springframework.context.support.aware.ApplicationContextAware;
+import com.zsy.springframework.beans.factory.annotation.Autowired;
+import com.zsy.springframework.beans.factory.annotation.Value;
+import com.zsy.springframework.stereotype.Component;
 
 import java.util.Random;
 
-@Component("userService111")
+@Component
 public class UserService implements IUserService{
 
+    @Value("${token}")
     private String token;
+
+    @Autowired
+    private UserDao userDao;
 
     @Override
     public String queryUserInfo() {
@@ -23,7 +23,7 @@ public class UserService implements IUserService{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return "小傅哥，100001，深圳";
+        return userDao.queryUserName("10001") + "，" + token;
     }
 
     @Override

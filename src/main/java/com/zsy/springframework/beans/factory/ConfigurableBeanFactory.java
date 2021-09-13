@@ -3,6 +3,7 @@ package com.zsy.springframework.beans.factory;
 import com.zsy.springframework.beans.BeansException;
 import com.zsy.springframework.beans.factory.config.BeanPostProcessor;
 import com.zsy.springframework.beans.factory.config.SingletonBeanRegistry;
+import com.zsy.springframework.utils.StringValueResolver;
 
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
 
@@ -13,4 +14,8 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) throws BeansException;
 
     void destroySingletons();
+
+    void addEmbeddedValueResolver(StringValueResolver valueResolver);
+
+    String resolveEmbeddedValue(String value);
 }
