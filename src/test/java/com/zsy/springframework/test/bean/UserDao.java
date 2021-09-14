@@ -1,6 +1,6 @@
 package com.zsy.springframework.test.bean;
 
-import com.zsy.springframework.beans.factory.annotation.Component;
+import com.zsy.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;

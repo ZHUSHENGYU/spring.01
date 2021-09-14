@@ -20,14 +20,15 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         this.beanFactory = (ConfigurableBeanFactory) beanFactory;
     }
 
+    @Override
     public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
-
+        // 1. 处理注解 @Value
         Class<?> clazz = bean.getClass();
-        clazz = ClassUtils.isCglibProxyClass(clazz)? clazz.getSuperclass() : clazz;
+        clazz = ClassUtils.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+
         Field[] declaredFields = clazz.getDeclaredFields();
 
         for (Field field : declaredFields) {
-
             Value valueAnnotation = field.getAnnotation(Value.class);
             if (null != valueAnnotation) {
                 String value = valueAnnotation.value();
@@ -36,16 +37,14 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
             }
         }
 
-        for (Field field: declaredFields) {
-
+        // 2. 处理注解 @Autowired
+        for (Field field : declaredFields) {
             Autowired autowiredAnnotation = field.getAnnotation(Autowired.class);
             if (null != autowiredAnnotation) {
-
                 Class<?> fieldType = field.getType();
                 String dependentBeanName = null;
-
-                Object dependentBean = null;
                 Qualifier qualifierAnnotation = field.getAnnotation(Qualifier.class);
+                Object dependentBean = null;
                 if (null != qualifierAnnotation) {
                     dependentBeanName = qualifierAnnotation.value();
                     dependentBean = beanFactory.getBean(dependentBeanName, fieldType);
@@ -55,6 +54,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
                 BeanUtil.setFieldValue(bean, field.getName(), dependentBean);
             }
         }
+
         return pvs;
     }
 

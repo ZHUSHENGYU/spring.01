@@ -33,8 +33,7 @@ public class ClassUtils {
         return (clazzName != null && clazzName.contains("$$"));
     }
 
-    public static Set<Class<?>> scanPackageByAnnotation(String basePackage, Class<? extends Annotation> annotationClass) {
-
-        return ClassScanner.scanPackageByAnnotation(basePackage, annotationClass);
+    public static Set<Class<?>> scanPackageByAnnotation(String packageName, Class<? extends Annotation> annotationClass) {
+        return ClassScanner.scanPackageByAnnotation(packageName, annotationClass);
     }
 }
