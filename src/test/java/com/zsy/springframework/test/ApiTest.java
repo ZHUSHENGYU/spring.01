@@ -11,7 +11,7 @@ import java.util.Set;
 public class ApiTest {
 
     @Test
-    public void testAop() {
+    public void test() {
 
         ClassPathXmlApplicationContext applicationContext
                 = new ClassPathXmlApplicationContext("classpath:spring-04.xml");

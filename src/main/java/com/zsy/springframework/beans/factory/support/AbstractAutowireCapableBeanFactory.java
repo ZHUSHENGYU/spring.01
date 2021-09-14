@@ -33,32 +33,79 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
 
-        Object bean = null;
-        try {
+        Object bean = resolveBeforeInstantiation(beanName, beanDefinition);
+        if (null != bean){
+            return bean;
+        }
 
-            bean = resolveBeforeInstantiation(beanName, beanDefinition);
-            if (null != bean){
-                return bean;
-            }
+        return doCreateBean(beanName, beanDefinition, args);
+    }
+
+    protected Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
+
+        Object bean = null;
+
+        try {
 
             bean = createBeanInstance(beanDefinition, beanName, args);
 
-            applyBeanPostProcessorBeforeApplyingPropertyValues(beanName,bean,beanDefinition);
+            if (beanDefinition.isSingleton()) {
 
+                Object finalBean = bean;
+                addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
+            }
+
+            boolean continueWithPropertyPopulation =
+                    applyBeanPostProcessorsAfterInstantiation(beanName, bean);
+            if (!continueWithPropertyPopulation) {
+                return bean;
+            }
+
+            applyBeanPostProcessorBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             applyBeanPropertyValues(beanName, bean, beanDefinition);
-
             bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
+
             throw new BeansException("Instantiation of bean failed", e);
         }
 
         registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
 
+        Object exposedBean = bean;
         if (beanDefinition.isSingleton()) {
-            addSingleton(beanName, bean);
+            exposedBean = getSingleton(beanName);
+            registerSingleton(beanName, exposedBean);
+        }
+        return exposedBean;
+    }
+
+    protected boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
+
+        boolean continueWithPropertyPopulation = true;
+        for (BeanPostProcessor beanPostProcessor: getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+
+                InstantiationAwareBeanPostProcessor instantiationAwareBeanPostProcessor = (InstantiationAwareBeanPostProcessor) beanPostProcessor;
+                if (!instantiationAwareBeanPostProcessor.postProcessAfterInstantiation(bean, beanName)) {
+                    continueWithPropertyPopulation = false;
+                    break;
+                }
+            }
+        }
+        return continueWithPropertyPopulation;
+    }
+
+    protected Object getEarlyBeanReference(String beanName, BeanDefinition beanDefinition, Object bean) {
+
+        Object exposedBean = bean;
+        for (BeanPostProcessor beanPostProcessor: getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                ((InstantiationAwareBeanPostProcessor) beanPostProcessor).getEarlyBeanReference(exposedBean, beanName);
+                if (null == exposedBean) return exposedBean;
+            }
         }
 
-        return bean;
+        return exposedBean;
     }
 
     protected void applyBeanPostProcessorBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
