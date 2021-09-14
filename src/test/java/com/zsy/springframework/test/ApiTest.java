@@ -11,22 +11,11 @@ import java.util.Set;
 public class ApiTest {
 
     @Test
-    public void testScan() {
+    public void testAop() {
 
         ClassPathXmlApplicationContext applicationContext
                 = new ClassPathXmlApplicationContext("classpath:spring-04.xml");
         IUserService userService = applicationContext.getBean("userService", IUserService.class);
         System.out.println(userService.queryUserInfo());
-
-
-    }
-
-    @Test
-    public void testBasePackageScan() {
-
-        Set<Class<?>> classes = ClassUtils.scanPackageByAnnotation("com.zsy.springframework.test.bean", Component.class);
-        for (Class<?> clazz: classes) {
-            System.out.println(clazz);
-        }
     }
 }
